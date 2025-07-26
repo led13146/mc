@@ -1,0 +1,181 @@
+/* 全局样式 */
+body {
+    background: url('https://zqq116.oss-cn-hongkong.aliyuncs.com/upload/logo.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Minecraft', sans-serif;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 容器样式 */
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    max-width: 800px;
+    width: 90%;
+    margin: 20px auto;
+}
+
+/* 标题样式 */
+h1 {
+    text-align: center;
+    color: #00ff00;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+/* 控制面板样式 */
+.control-panel {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.server-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.server-input input {
+    padding: 8px;
+    border: 1px solid #00ff00;
+    background: rgba(0, 0, 0, 0.5);
+    color: #00ff00;
+    border-radius: 4px;
+}
+
+.server-input button {
+    padding: 8px 15px;
+    background: #00ff00;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.auto-refresh-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auto-refresh-control select,
+.auto-refresh-control input[type="checkbox"] {
+    background: rgba(0, 0, 0, 0.5);
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+/* 状态容器样式 */
+.status-container {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ccc;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.status-indicator.online {
+    background: #2ecc71;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+}
+
+.status-indicator.offline {
+    background: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.server-info h2 {
+    color: #00ff00;
+    margin-top: 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.info-item {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.info-item strong {
+    color: #00ff00;
+}
+
+.info-item span {
+    color: #fff;
+}
+
+/* 状态历史记录样式 */
+.status-history {
+    font-size: 14px;
+    color: #666;
+    padding-top: 8px;
+    border-top: 1px dashed #00ff00;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.status-history span {
+    margin-right: 10px;
+}
+
+.status-history .online {
+    color: #2ecc71;
+}
+
+.status-history .offline {
+    color: #e74c3c;
+}
+
+/* 加入服务器按钮样式 */
+.join-section {
+    text-align: center;
+}
+
+.join-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #00ff00;
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.join-note {
+    color: #ccc;
+    font-size: 14px;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

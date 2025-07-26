@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft 服务器状态监控</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Minecraft 服务器状态监控</h1>
+
+        <div class="control-panel">
+            <div class="server-input">
+                <input type="text" id="serverAddress" placeholder="输入服务器地址 (例如: mc.example.com:19132)" value="zmcp1.rhymc.com:1052">
+                <input type="text" id="serverDisplayName" placeholder="服务器显示名称" value="生存大陆">
+                <button id="checkStatus">手动刷新</button>
+            </div>
+
+            <div class="auto-refresh-control">
+                <label for="autoRefreshToggle">自动刷新:</label>
+                <input type="checkbox" id="autoRefreshToggle" checked>
+                <select id="refreshInterval">
+                    <option value="10000" selected>10秒</option>
+                    <option value="3000">3秒</option>
+                    <option value="5000">5秒</option>
+                    <option value="10000">10秒</option>
+                    <option value="30000">30秒</option>
+                </select>
+                <span id="lastUpdated">上次更新: 未更新</span>
+            </div>
+        </div>
+
+        <div class="status-container" id="statusContainer">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <div class="server-info">
+                <h2 id="serverName">服务器名称</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p><strong>状态:</strong> <span id="serverStatus">未查询</span></p>
+                        <p><strong>版本:</strong> <span id="serverVersion">--</span></p>
+                    </div>
+                    <div class="info-item">
+                        <p><strong>玩家数量:</strong> <span id="playerCount">--</span>/<span id="maxPlayers">--</span></p>
+                        <p><strong>延迟:</strong> <span id="serverPing">--</span>ms
+                            <span class="ping-loading" id="pingLoading" style="display:none">⟳ 检测中</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="status-history">
+                    <p><strong>状态历史:</strong> <span id="statusHistory">无记录</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="join-section">
+            <a id="joinButton" href="minecraft://?addExternalServer=生存大陆|zmcp1.rhymc.com:1052" class="join-button" target="_blank" rel="noopener noreferrer">
+                一键加入服务器
+            </a>
+            <p class="join-note">点击后将打开 Minecraft 并添加服务器</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
