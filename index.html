@@ -3,63 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正在跳转至浏览器...</title>
+    <title>请在浏览器中打开</title>
     <script>
-        // 检测是否在QQ或微信内置环境中
-        function isWechatOrQQ() {
+        // 精准检测QQ内置环境（包括QQ客户端和QQ浏览器）
+        function isQQEnvironment() {
             const ua = navigator.userAgent.toLowerCase();
-            // 微信特征：包含MicroMessenger
-            const isWechat = ua.includes('micromessenger');
-            // QQ特征：包含qqbrowser、mqqbrowser或qq/
-            const isQQ = ua.includes('qqbrowser') || ua.includes('mqqbrowser') || ua.includes('qq/');
-            return isWechat || isQQ;
+            return ua.includes('qqbrowser') || 
+                   ua.includes('mqqbrowser') || 
+                   ua.includes('qq/') || 
+                   ua.includes('mqq/') || 
+                   ua.includes('tencenttraveler'); // 腾讯浏览器内核特征
         }
 
         window.onload = function() {
-            // 替换为你的目标链接（例如下载页、功能页等）
+            // 替换为你的目标链接
             const targetUrl = "mc.html";
+            const tipsEl = document.querySelector('.tips');
 
-            // 核心跳转函数：唤起系统默认浏览器
-            function openInDefaultBrowser(url) {
-                // 微信环境特殊处理：尝试通过隐藏a标签触发外部跳转
-                if (navigator.userAgent.toLowerCase().includes('micromessenger')) {
-                    // 创建备用链接（微信中可能需要用户手动点击）
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.target = '_blank';
-                    a.style = 'display:none';
-                    document.body.appendChild(a);
-                    a.click();
-                    // 提示用户手动操作（微信限制较严，可能需要引导）
-                    document.querySelector('.tips').textContent = '微信中请点击下方链接，选择"在浏览器中打开"';
-                } 
-                // QQ环境处理：优先调用QQ内置API
-                else if (navigator.userAgent.toLowerCase().includes('qqbrowser') || navigator.userAgent.toLowerCase().includes('mqqbrowser')) {
-                    if (typeof qq !== 'undefined' && qq.invoke) {
-                        qq.invoke("openUrl", url); // QQ客户端API直接唤起浏览器
-                    } else {
-                        window.location.href = url; // 备用方案
+            // QQ环境强制跳转逻辑
+            if (isQQEnvironment()) {
+                // 强制隐藏内容，只显示跳转提示
+                document.body.classList.add('qq-env');
+                
+                // 尝试QQ专属API直接唤起浏览器
+                if (typeof qq !== 'undefined' && qq.invoke) {
+                    try {
+                        qq.invoke("openUrl", targetUrl);
+                        tipsEl.textContent = "正在唤起默认浏览器... 若未响应请点击下方链接";
+                    } catch (e) {
+                        tipsEl.textContent = "QQ环境限制，需手动在浏览器中打开";
                     }
+                } else {
+                    // 无API时直接强制跳转
+                    window.location.href = targetUrl;
+                    tipsEl.textContent = "正在跳转至浏览器... 若未响应请点击下方链接";
                 }
-                // 通用跳转：直接刷新当前页跳转
-                window.location.href = url;
 
-                // 2秒后显示手动备用链接（防止自动跳转失败）
+                // 2秒后显示手动跳转链接（确保用户能操作）
                 setTimeout(() => {
                     const manualLink = document.createElement('a');
-                    manualLink.href = url;
-                    manualLink.textContent = "点击手动在浏览器中打开";
-                    manualLink.style = "display: block; margin: 20px auto; color: #007bff; text-decoration: underline; font-size: 16px;";
+                    manualLink.href = targetUrl;
+                    manualLink.textContent = "点击这里在浏览器中打开";
+                    manualLink.className = "manual-link";
                     document.body.appendChild(manualLink);
                 }, 2000);
-            }
 
-            // 执行跳转逻辑
-            if (isWechatOrQQ()) {
-                // 在微信/QQ中强制跳转至默认浏览器
-                openInDefaultBrowser(targetUrl);
             } else {
-                // 非受限环境直接跳转
+                // 非QQ环境直接打开目标内容
                 window.location.href = targetUrl;
             }
         };
@@ -73,23 +63,41 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: system-ui, sans-serif;
             text-align: center;
-            color: #333;
-            background: #f5f5f5;
+            background: #f5f7fa;
         }
-        .loading {
-            font-size: 18px;
+        .title {
+            font-size: 20px;
+            color: #333;
             margin-bottom: 15px;
         }
         .tips {
             color: #666;
             font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        /* QQ环境下的样式：强化提示，隐藏无关内容 */
+        body.qq-env .title {
+            color: #e53e3e; /* 红色强调 */
+        }
+        .manual-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .manual-link:hover {
+            background: #1d4ed8;
         }
     </style>
 </head>
 <body>
-    <div class="loading">正在唤起浏览器，请稍候...</div>
-    <div class="tips">若长时间无反应，请等待备用链接</div>
+    <div class="title">该内容不支持在QQ中打开</div>
+    <div class="tips">正在为您跳转至系统默认浏览器...</div>
 </body>
 </html>
