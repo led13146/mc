@@ -5,52 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>请在浏览器中打开</title>
     <script>
-        // 精准检测QQ内置环境（包括QQ客户端和QQ浏览器）
-        function isQQEnvironment() {
+        // 检测是否在QQ/微信内置环境
+        function isInAppEnv() {
             const ua = navigator.userAgent.toLowerCase();
-            return ua.includes('qqbrowser') || 
-                   ua.includes('mqqbrowser') || 
-                   ua.includes('qq/') || 
-                   ua.includes('mqq/') || 
-                   ua.includes('tencenttraveler'); // 腾讯浏览器内核特征
+            return ua.includes('micromessenger') || // 微信
+                   ua.includes('qqbrowser') ||      // QQ浏览器
+                   ua.includes('mqqbrowser') ||     // 移动QQ浏览器
+                   ua.includes('qq/') ||            // QQ客户端
+                   ua.includes('mqq/');             // 移动QQ客户端
+        }
+
+        // 手动跳转函数（必须点击后执行）
+        function forceJump() {
+            // 替换为你的目标链接
+            const targetUrl = "mc.html";
+            const tipsEl = document.getElementById('jumpTips');
+
+            // 判断当前环境并执行对应跳转逻辑
+            if (isInAppEnv()) {
+                // QQ环境：优先调用API唤起系统浏览器
+                if (navigator.userAgent.toLowerCase().includes('qqbrowser') || navigator.userAgent.toLowerCase().includes('mqqbrowser')) {
+                    if (typeof qq !== 'undefined' && qq.invoke) {
+                        qq.invoke("openUrl", targetUrl); // QQ专属API强制唤起浏览器
+                        tipsEl.textContent = "正在打开系统浏览器... 请稍候";
+                    } else {
+                        // 备用方案：直接跳转（触发系统浏览器选择）
+                        window.location.href = targetUrl;
+                        tipsEl.textContent = "正在跳转至浏览器...";
+                    }
+                } 
+                // 微信/其他应用环境：强制触发外部浏览器选择
+                else {
+                    // 创建链接并触发点击（强制弹出"在浏览器中打开"选项）
+                    const a = document.createElement('a');
+                    a.href = targetUrl;
+                    a.target = '_system'; // 强制使用系统浏览器
+                    document.body.appendChild(a);
+                    a.click();
+                    tipsEl.textContent = "请在弹出选项中选择手机自带浏览器";
+                }
+            } else {
+                // 已在系统浏览器中：直接打开目标链接
+                window.location.href = targetUrl;
+            }
         }
 
         window.onload = function() {
-            // 替换为你的目标链接
-            const targetUrl = "mc.html";
-            const tipsEl = document.querySelector('.tips');
-
-            // QQ环境强制跳转逻辑
-            if (isQQEnvironment()) {
-                // 强制隐藏内容，只显示跳转提示
-                document.body.classList.add('qq-env');
-                
-                // 尝试QQ专属API直接唤起浏览器
-                if (typeof qq !== 'undefined' && qq.invoke) {
-                    try {
-                        qq.invoke("openUrl", targetUrl);
-                        tipsEl.textContent = "正在唤起默认浏览器... 若未响应请点击下方链接";
-                    } catch (e) {
-                        tipsEl.textContent = "QQ环境限制，需手动在浏览器中打开";
-                    }
-                } else {
-                    // 无API时直接强制跳转
-                    window.location.href = targetUrl;
-                    tipsEl.textContent = "正在跳转至浏览器... 若未响应请点击下方链接";
-                }
-
-                // 2秒后显示手动跳转链接（确保用户能操作）
-                setTimeout(() => {
-                    const manualLink = document.createElement('a');
-                    manualLink.href = targetUrl;
-                    manualLink.textContent = "点击这里在浏览器中打开";
-                    manualLink.className = "manual-link";
-                    document.body.appendChild(manualLink);
-                }, 2000);
-
-            } else {
-                // 非QQ环境直接打开目标内容
-                window.location.href = targetUrl;
+            // 检测到应用内置环境时，强化提示
+            if (isInAppEnv()) {
+                document.querySelector('.env-tip').style.display = 'block';
             }
         };
     </script>
@@ -59,45 +62,68 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            background: #f5f7fa;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             font-family: system-ui, sans-serif;
             text-align: center;
-            background: #f5f7fa;
         }
         .title {
-            font-size: 20px;
-            color: #333;
+            font-size: 22px;
+            color: #e53e3e;
             margin-bottom: 15px;
+            font-weight: bold;
         }
-        .tips {
+        .env-tip {
+            color: #ff6b35;
+            font-size: 15px;
+            margin-bottom: 30px;
+            padding: 10px;
+            border: 1px solid #ffd6c8;
+            border-radius: 6px;
+            background: #fff8f5;
+            display: none; /* 仅在应用内置环境显示 */
+        }
+        .desc {
             color: #666;
             font-size: 14px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             line-height: 1.6;
+            max-width: 300px;
         }
-        /* QQ环境下的样式：强化提示，隐藏无关内容 */
-        body.qq-env .title {
-            color: #e53e3e; /* 红色强调 */
-        }
-        .manual-link {
-            display: inline-block;
-            padding: 10px 20px;
+        .jump-btn {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px 0;
             background: #2563eb;
             color: white;
-            text-decoration: none;
-            border-radius: 6px;
+            border: none;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
         }
-        .manual-link:hover {
+        .jump-btn:hover {
             background: #1d4ed8;
+        }
+        #jumpTips {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="title">该内容不支持在QQ中打开</div>
-    <div class="tips">正在为您跳转至系统默认浏览器...</div>
+    <div class="title">请在手机浏览器中打开</div>
+    <div class="env-tip">检测到您正在QQ/微信中打开，该功能需在系统浏览器中使用</div>
+    <div class="desc">
+        为确保功能正常使用，请点击下方按钮，在弹出选项中选择手机自带浏览器（如Chrome、Safari、华为浏览器等）
+    </div>
+    <!-- 强制手动点击的按钮 -->
+    <button class="jump-btn" onclick="forceJump()">点击跳转至浏览器</button>
+    <div id="jumpTips"></div>
 </body>
 </html>
