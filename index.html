@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>访问选项</title>
+    <title>访问提示</title>
     <style>
+        /* 保持原有样式不变 */
         body {
             font-family: "Microsoft YaHei", sans-serif;
             max-width: 800px;
@@ -151,39 +152,6 @@
         .content p:nth-child(6) { animation-delay: 1.5s; }
         .content p:nth-child(7) { animation-delay: 1.7s; }
 
-        /* 按钮样式 */
-        .access-btn {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 15px 10px 5px;
-            background: linear-gradient(45deg, #23a6d5, #23d5ab);
-            color: white;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(35, 213, 171, 0.3);
-            opacity: 0;
-            transform: translateX(-30px);
-            animation: slideIn 0.5s ease forwards;
-            animation-delay: 1.9s;
-        }
-
-        .access-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(35, 213, 171, 0.4);
-        }
-
-        .browser-btn {
-            background: linear-gradient(45deg, #ff8e53, #ff6b6b);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        .browser-btn:hover {
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-        }
-
         /* 添加光晕效果 */
         .notice-box::before {
             content: '';
@@ -205,7 +173,47 @@
             50% { opacity: 0.8; }
         }
 
-        /* 适配移动端 */
+        /* 按钮样式 */
+        .access-btn {
+            display: inline-block;
+            margin: 15px auto 10px;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #23a6d5, #23d5ab);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(35, 213, 171, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: btnSlideUp 0.5s ease forwards 1.9s;
+            text-decoration: none;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(35, 213, 171, 0.5);
+        }
+
+        @keyframes btnSlideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .weixin-note {
+            color: #ff6b6b;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        /* 媒体查询适配移动端 */
         @media screen and (max-width: 480px) {
             body {
                 padding: 15px;
@@ -233,62 +241,10 @@
                 font-size: 13px;
                 padding: 3px 6px;
             }
-
+            
             .access-btn {
-                padding: 10px 20px;
-                width: 80%;
-                margin: 10px auto;
-                display: block;
-            }
-        }
-
-        .music-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .music-control:hover {
-            transform: scale(1.1);
-        }
-
-        .music-control.playing {
-            animation: rotate 5s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .music-icon {
-            width: 24px;
-            height: 24px;
-            fill: #ff6b6b;
-        }
-
-        @media screen and (max-width: 480px) {
-            .music-control {
-                width: 35px;
-                height: 35px;
-                top: 15px;
-                right: 15px;
-            }
-
-            .music-icon {
-                width: 20px;
-                height: 20px;
+                padding: 10px 25px;
+                font-size: 15px;
             }
         }
 
@@ -323,14 +279,6 @@
             display: none;
             z-index: 1000;
         }
-
-        .weixin-note {
-            color: #ff6b6b;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: rgba(255, 107, 107, 0.1);
-        }
     </style>
 </head>
 <body>
@@ -353,54 +301,66 @@
             <p>正在为您跳转至目标网址...</p>
             <p>目标网址：<span class="target-url" onclick="copyUrl()">https://mcl.zqq666.top/mc.html</span></p>
             <p class="copy-tip">(点击网址可复制)</p>
-            <p><a href="https://mcl.zqq666.top/mc.html" class="access-btn">立即访问</a></p>
+            <a href="https://mcl.zqq666.top/mc.html" class="access-btn">立即访问</a>
         </div>
         <div class="content" id="weixinTip">
             <p>您正在QQ/微信内置浏览器中访问</p>
-            <p class="weixin-note">注意：部分功能可能无法正常使用</p>
-            <p>您可以选择以下访问方式：</p>
-            <p><a href="https://mcl.zqq666.top/mc.html" class="access-btn">直接访问 (推荐体验)</a></p>
-            <p><span class="browser-btn access-btn" onclick="showBrowserTips()">在浏览器中打开 (功能完整)</span></p>
+            <p class="weixin-note">提示：部分功能可能无法正常使用</p>
+            <p>推荐在外部浏览器打开以获得最佳体验</p>
+            <p>操作方式：点击右上角【...】选择【在浏览器中打开】</p>
             <p>目标网址：<span class="target-url" onclick="copyUrl()">https://mcl.zqq666.top/mc.html</span></p>
             <p class="copy-tip">(点击网址可复制)</p>
+            <!-- 新增直接访问按钮 -->
+            <a href="https://mcl.zqq666.top/mc.html" class="access-btn">直接访问 (可能受限)</a>
         </div>
     </div>
 
     <div id="toast">已复制到剪贴板</div>
 
     <script>
-        // 音乐控制
+        // 音乐控制相关代码
         const audio = document.getElementById('bgMusic');
         const musicControl = document.querySelector('.music-control');
         let isPlaying = false;
 
-        async function playAudio() {
+        function playAudio() {
             try {
-                audio.volume = 0;
-                await audio.play();
-                isPlaying = true;
-                musicControl.classList.add('playing');
-                let vol = 0;
-                const fadeIn = setInterval(() => {
-                    if (vol < 1) {
-                        vol += 0.1;
-                        audio.volume = Math.min(vol, 1);
-                    } else {
-                        clearInterval(fadeIn);
-                    }
-                }, 200);
+                if (audio.paused) {
+                    audio.volume = 0;
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        musicControl.classList.add('playing');
+                        // 音量渐增
+                        let vol = 0;
+                        const fadeIn = setInterval(() => {
+                            if (vol < 1) {
+                                vol += 0.1;
+                                audio.volume = Math.min(vol, 1);
+                            } else {
+                                clearInterval(fadeIn);
+                            }
+                        }, 200);
+                    }).catch(err => {
+                        console.log("播放失败:", err);
+                    });
+                }
             } catch (err) {
-                console.log("播放失败:", err);
+                console.log("播放异常:", err);
             }
         }
 
         function initAudioPlay() {
+            // 尝试播放音乐
             playAudio();
+            
+            // 页面可见性变化时尝试播放
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden && !isPlaying) {
                     playAudio();
                 }
             });
+            
+            // 用户交互后尝试播放
             const userInteractions = ['click', 'touchstart', 'keydown'];
             userInteractions.forEach(event => {
                 document.addEventListener(event, () => {
@@ -425,28 +385,80 @@
 
         const targetUrl = 'https://mcl.zqq666.top/mc.html';
         
-        // 检测QQ/微信环境
+        // 检测是否在微信或QQ内打开
         function isWeixinOrQQ() {
             const ua = navigator.userAgent.toLowerCase();
-            return ua.match(/MicroMessenger/i) || ua.match(/QQ/i);
+            return ua.match(/microMessenger/i) ? true : ua.match(/QQ/i) ? true : false;
         }
 
-        // 复制网址
+        // 复制网址功能
         function copyUrl() {
+            // 创建临时输入框
             const textarea = document.createElement('textarea');
             textarea.value = targetUrl;
             document.body.appendChild(textarea);
             textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
             
+            try {
+                // 尝试复制
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('已复制到剪贴板');
+                } else {
+                    showToast('复制失败，请手动复制');
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+                showToast('复制失败，请手动复制');
+            } finally {
+                // 移除临时输入框
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // 显示提示信息
+        function showToast(message) {
             const toast = document.getElementById('toast');
+            toast.textContent = message;
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 2000);
         }
 
-        // 显示浏览器打开提示
-        function showBrowserTips() {
-            alert('请点击右上角【...】图标，选择【
+        // 页面加载完成后的处理
+        window.onload = function() {
+            // 初始化音乐播放
+            initAudioPlay();
+            
+            // 检测是否在微信或QQ内打开
+            if (isWeixinOrQQ()) {
+                // QQ/微信内显示提示和直接访问按钮
+                document.getElementById('normalContent').style.display = 'none';
+                document.getElementById('weixinTip').style.display = 'block';
+            } else {
+                // 普通浏览器正常显示
+                document.getElementById('weixinTip').style.display = 'none';
+                document.getElementById('normalContent').style.display = 'block';
+                startCountdown();
+            }
+        };
+
+        // 普通浏览器倒计时功能
+        let timeLeft = 5;
+        const countdownElement = document.getElementById('countdown');
+
+        function startCountdown() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    window.location.href = targetUrl;
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
