@@ -3,57 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>请在浏览器中打开</title>
+    <title>请在外部浏览器打开</title>
     <script>
-        // 检测是否在QQ/微信内置环境
-        function isInAppEnv() {
+        // 精准检测QQ内置环境（包含所有QQ相关内核）
+        function isQQInnerBrowser() {
             const ua = navigator.userAgent.toLowerCase();
-            return ua.includes('micromessenger') || // 微信
-                   ua.includes('qqbrowser') ||      // QQ浏览器
-                   ua.includes('mqqbrowser') ||     // 移动QQ浏览器
-                   ua.includes('qq/') ||            // QQ客户端
-                   ua.includes('mqq/');             // 移动QQ客户端
+            return ua.includes('qqbrowser') && !ua.includes('chrome') ||  // 纯QQ浏览器
+                   ua.includes('mqqbrowser') && ua.includes('tencent') || // 移动QQ内置浏览器
+                   ua.includes('qq/') && !ua.includes('safari'); // QQ客户端WebView
         }
 
-        // 手动跳转函数（必须点击后执行）
-        function forceJump() {
-            // 替换为你的目标链接
-            const targetUrl = "mc.html";
-            const tipsEl = document.getElementById('jumpTips');
+        // 核心跳转函数：强制唤起系统浏览器
+        function forceOpenExternalBrowser() {
+            const targetUrl = "mc.html"; // 替换为你的目标链接
+            const tips = document.getElementById('tips');
 
-            // 判断当前环境并执行对应跳转逻辑
-            if (isInAppEnv()) {
-                // QQ环境：优先调用API唤起系统浏览器
-                if (navigator.userAgent.toLowerCase().includes('qqbrowser') || navigator.userAgent.toLowerCase().includes('mqqbrowser')) {
-                    if (typeof qq !== 'undefined' && qq.invoke) {
-                        qq.invoke("openUrl", targetUrl); // QQ专属API强制唤起浏览器
-                        tipsEl.textContent = "正在打开系统浏览器... 请稍候";
-                    } else {
-                        // 备用方案：直接跳转（触发系统浏览器选择）
-                        window.location.href = targetUrl;
-                        tipsEl.textContent = "正在跳转至浏览器...";
-                    }
-                } 
-                // 微信/其他应用环境：强制触发外部浏览器选择
-                else {
-                    // 创建链接并触发点击（强制弹出"在浏览器中打开"选项）
-                    const a = document.createElement('a');
-                    a.href = targetUrl;
-                    a.target = '_system'; // 强制使用系统浏览器
-                    document.body.appendChild(a);
-                    a.click();
-                    tipsEl.textContent = "请在弹出选项中选择手机自带浏览器";
+            if (isQQInnerBrowser()) {
+                // 方案1：利用QQ的协议漏洞强制跳出（成功率最高）
+                if (typeof window !== 'undefined') {
+                    // 创建隐藏的iframe触发外部协议跳转
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = `weixin://dl/business/?t=xxxxxx`; // 用无关协议触发浏览器唤醒
+                    document.body.appendChild(iframe);
+                    
+                    // 延迟后立即执行实际跳转
+                    setTimeout(() => {
+                        // 关键：使用location.replace强制替换历史记录，避免回退到QQ浏览器
+                        window.location.replace(targetUrl);
+                        tips.textContent = "正在唤醒系统浏览器... 若弹出选择框请选默认浏览器";
+                    }, 300);
+
+                    // 备用方案：2秒后再次尝试
+                    setTimeout(() => {
+                        // 创建a标签并指定_system属性（强制系统浏览器）
+                        const a = document.createElement('a');
+                        a.href = targetUrl;
+                        a.setAttribute('target', '_system');
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                    }, 2000);
                 }
             } else {
-                // 已在系统浏览器中：直接打开目标链接
+                // 非QQ环境直接跳转
                 window.location.href = targetUrl;
             }
         }
 
+        // 页面加载后检测环境并提示
         window.onload = function() {
-            // 检测到应用内置环境时，强化提示
-            if (isInAppEnv()) {
-                document.querySelector('.env-tip').style.display = 'block';
+            if (isQQInnerBrowser()) {
+                document.querySelector('.warning').style.display = 'block';
             }
         };
     </script>
@@ -62,7 +63,7 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
-            background: #f5f7fa;
+            background: #f8f9fa;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -70,60 +71,63 @@
             font-family: system-ui, sans-serif;
             text-align: center;
         }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            display: none;
+            width: 80%;
+        }
         .title {
-            font-size: 22px;
-            color: #e53e3e;
-            margin-bottom: 15px;
+            font-size: 20px;
+            color: #dc3545;
+            margin-bottom: 20px;
             font-weight: bold;
         }
-        .env-tip {
-            color: #ff6b35;
-            font-size: 15px;
-            margin-bottom: 30px;
-            padding: 10px;
-            border: 1px solid #ffd6c8;
-            border-radius: 6px;
-            background: #fff8f5;
-            display: none; /* 仅在应用内置环境显示 */
-        }
         .desc {
-            color: #666;
-            font-size: 14px;
+            color: #495057;
+            font-size: 15px;
             margin-bottom: 40px;
             line-height: 1.6;
-            max-width: 300px;
+            width: 80%;
         }
         .jump-btn {
             width: 80%;
             max-width: 300px;
-            padding: 12px 0;
-            background: #2563eb;
+            padding: 14px 0;
+            background: #007bff;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s;
+            box-shadow: 0 4px 6px rgba(0,123,255,0.2);
+            transition: all 0.3s;
         }
-        .jump-btn:hover {
-            background: #1d4ed8;
+        .jump-btn:active {
+            background: #0056b3;
+            transform: scale(0.98);
         }
-        #jumpTips {
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
+        #tips {
+            margin-top: 25px;
+            color: #6c757d;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
-    <div class="title">请在手机浏览器中打开</div>
-    <div class="env-tip">检测到您正在QQ/微信中打开，该功能需在系统浏览器中使用</div>
+    <div class="warning">⚠️ 检测到您正在QQ内部浏览器中，功能受限</div>
+    <div class="title">请使用手机自带浏览器打开</div>
     <div class="desc">
-        为确保功能正常使用，请点击下方按钮，在弹出选项中选择手机自带浏览器（如Chrome、Safari、华为浏览器等）
+        点击下方按钮后，若弹出选择框，请选择手机默认浏览器（如Chrome、Safari、华为浏览器等）
     </div>
-    <!-- 强制手动点击的按钮 -->
-    <button class="jump-btn" onclick="forceJump()">点击跳转至浏览器</button>
-    <div id="jumpTips"></div>
+    <button class="jump-btn" onclick="forceOpenExternalBrowser()">
+        点击唤起系统浏览器
+    </button>
+    <div id="tips">点击后请耐心等待2-3秒</div>
 </body>
 </html>
